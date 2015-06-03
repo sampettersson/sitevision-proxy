@@ -9,6 +9,8 @@ gulp.start('sass');
 
 var proxy = httpProxy.createProxyServer({});
 
+var dnsCache = [];
+
 var server = http.createServer(function(req, res) {
 
 	var options = {
@@ -43,9 +45,7 @@ var server = http.createServer(function(req, res) {
 		};
 	};
 
-	var dnsData = function (dnsResponse) {
-		data = JSON.parse(dnsResponse);
-		host = data.answer[0].rdata;
+	var checkRequest = function (host) {
 
 		if(req.url.indexOf("/webdav/files/") > -1) {
 
@@ -59,11 +59,43 @@ var server = http.createServer(function(req, res) {
 
 	};
 
+	var dnsData = function (dnsResponse) {
+		data = JSON.parse(dnsResponse);
+		dnsCache.push(data);
+		host = data.answer[0].rdata;
+
+		checkRequest(host);
+	};
+
+	var dnsCacheSearch = function (callback) {
+		found = false;
+		dnsCache.forEach(function (item) {
+			if (item.answer[0].name === req.headers['host'].replace(":8080", "") + ".") {
+				callback(item);
+				found = true;
+			}
+		});
+
+		if (!found) {
+			callback(null);
+		}
+	};
+
 	var dnsRequest = function (dns) {
 		dns.on('data', dnsData);
 	};
 
-	http.request(options, dnsRequest).end();
+	searchCallback = function (searchResponse) {
+
+		if (searchResponse === null) {
+			http.request(options, dnsRequest).end();
+		} else {
+			checkRequest(searchResponse.answer[0].rdata);
+		}
+
+	};
+
+	dnsCacheSearch(searchCallback);
 
 });
 
