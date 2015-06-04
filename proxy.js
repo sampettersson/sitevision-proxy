@@ -2,11 +2,6 @@ var http = require('http'),
     httpProxy = require('http-proxy'),
 	fs = require('fs');
 
-var gulp = require("gulp");
-require('./gulpfile.js');
-
-gulp.start('sass');
-
 var proxy = httpProxy.createProxyServer({});
 
 var dnsCache = [];
@@ -37,6 +32,7 @@ var server = http.createServer(function(req, res) {
 
 			} else {
 
+                console.log("Intercepted: " + req.url);
 				res.write(file, 'binary');
 				res.end();
 
