@@ -2,7 +2,7 @@
   "name": "sitevision-proxy",
   "version": "1.0.0",
   "description": "A proxy for local sitevision assets.",
-  "main": "proxy.js",
+  "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
