@@ -8,6 +8,23 @@ var proxy = httpProxy.createProxyServer({});
 
 var dnsCache = [];
 
+var loggingTool = function (message) {
+
+    var colors = require('colors');
+
+    var date = new Date();
+    var currentHours = date.getHours();
+    var currentMinutes = date.getMinutes();
+    var currentMilliseconds = date.getMilliseconds();
+    currentMilliseconds = String(currentMilliseconds).substring(0, 2);
+
+    var currentTime = currentHours + ":" + currentMinutes + ":" + currentMilliseconds;
+    var outputTime = "[" + currentTime.gray + "]";
+
+    console.log(outputTime + " " + message);
+
+};
+
 var server = http.createServer(function(req, res) {
 
 	var options = {
@@ -25,7 +42,7 @@ var server = http.createServer(function(req, res) {
 
 	};
 
-	var readFile = function (host) {
+	var readFile = function (host, filePath) {
 		return function (err, file) {
 
 			if (err) {
@@ -34,7 +51,11 @@ var server = http.createServer(function(req, res) {
 
 			} else {
 
-                console.log("Intercepted: " + req.url);
+                var fullUrl = req.protocol + '://' + req.headers['host'] + req.url;
+
+                loggingTool("Intercepted: " + fullUrl);
+                loggingTool("Replaced with: " + filePath);
+
 				res.write(file, 'binary');
 				res.end();
 
@@ -47,7 +68,9 @@ var server = http.createServer(function(req, res) {
 
 		if(req.url.indexOf("/webdav/files/") > -1) {
 
-			fs.readFile(req.url.replace("/webdav/files/", "./build/"), 'binary', readFile(host));
+            var filePath = req.url.replace("/webdav/files/", "./build/");
+
+			fs.readFile(filePath, 'binary', readFile(host, filePath));
 
 		} else {
 
@@ -97,6 +120,6 @@ var server = http.createServer(function(req, res) {
 
 });
 
-console.log("Proxy live at port 8080");
+loggingTool("Proxy live at port 8080");
 
 server.listen(port);
