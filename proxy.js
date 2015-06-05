@@ -47,7 +47,7 @@ var server = http.createServer(function(req, res) {
 
 		if(req.url.indexOf("/webdav/files/") > -1) {
 
-			fs.readFile(req.url.replace("/webdav/files/", "build/"), 'binary', readFile(host));
+			fs.readFile(req.url.replace("/webdav/files/", "./build/"), 'binary', readFile(host));
 
 		} else {
 
