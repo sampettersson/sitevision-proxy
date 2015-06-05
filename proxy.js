@@ -2,6 +2,8 @@ var http = require('http'),
     httpProxy = require('http-proxy'),
 	fs = require('fs');
 
+var port = 8080;
+
 var proxy = httpProxy.createProxyServer({});
 
 var dnsCache = [];
@@ -11,7 +13,7 @@ var server = http.createServer(function(req, res) {
 	var options = {
 		host: 'api.statdns.com',
 		port: '80',
-		path: '/' + req.headers['host'].replace(":8080", "") + '/a',
+		path: '/' + req.headers['host'].replace(":" + port, "") + '/a',
 		method: 'GET'
 	};
 
@@ -45,7 +47,7 @@ var server = http.createServer(function(req, res) {
 
 		if(req.url.indexOf("/webdav/files/") > -1) {
 
-			fs.readFile(req.url.replace("/webdav/", ""), 'binary', readFile(host));
+			fs.readFile(req.url.replace("/webdav/files/", "assets/"), 'binary', readFile(host));
 
 		} else {
 
@@ -66,7 +68,7 @@ var server = http.createServer(function(req, res) {
 	var dnsCacheSearch = function (callback) {
 		found = false;
 		dnsCache.forEach(function (item) {
-			if (item.answer[0].name === req.headers['host'].replace(":8080", "") + ".") {
+			if (item.answer[0].name === req.headers['host'].replace(":" + port, "") + ".") {
 				callback(item);
 				found = true;
 			}
@@ -97,4 +99,4 @@ var server = http.createServer(function(req, res) {
 
 console.log("Proxy live at port 8080");
 
-server.listen(8080);
+server.listen(port);

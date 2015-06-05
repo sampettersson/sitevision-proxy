@@ -1,13 +1,150 @@
+'use strict';
+
+// Dependencies
+var argv = require('yargs').argv;
+var browserify = require('browserify');
+var transform = require('vinyl-transform');
+var notifier = require('node-notifier');
+var livereload = require('gulp-livereload');
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
+var order = require('gulp-order');
+var plumber = require('gulp-plumber');
+var jshint = require('gulp-jshint');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
 var sass = require('gulp-sass');
+var minify = require('gulp-minify-css');
+var rename = require('gulp-rename');
+var prefix = require('gulp-autoprefixer');
+var imagemin = require('gulp-imagemin');
+var pngquant = require('imagemin-pngquant');
+var dev = !!(argv.dev);
 
-gulp.task('sass', function () {
-    gulp.src('./files/**/*.scss')
-        .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest('./files/dist/css'));
+// Set build folder path
+var wp = false;
+
+// Directories
+var path = {
+    src: {
+        scss: 'assets/scss/',
+        js: 'assets/js/',
+        js_vendor: 'assets/js/vendors/',
+        js_misc: 'assets/js/misc/',
+        img: 'assets/img/',
+        fonts: 'assets/fonts/'
+    },
+    dest: {
+        css: 'build/css/',
+        js: 'build/js/',
+        img: 'build/img/',
+        fonts: 'build/fonts/'
+    }
+};
+
+// Error handling
+var onError = function (err) {
+    console.log(err.toString());
+    notifier.notify({ title: 'Gulp error', message: err.toString() });
+    this.emit('end');
+};
+
+// Jshint
+gulp.task('hint', function() {
+    return gulp.src([path.src.js+'components/*.js'])
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
 });
 
-gulp.task('watch', function () {
-    require('./proxy.js');
-    gulp.watch('./files/**/*.scss', ['sass']);
+// Scripts
+gulp.task('scripts', function() {
+
+    var browserified = transform(function(filename) {
+        return browserify(filename).bundle();
+    });
+
+    return gulp.src(path.src.js+'*.js')
+        .pipe(plumber({
+            errorHandler: onError
+        }))
+        .pipe(browserified)
+        .pipe(gulpif(!dev, uglify()))
+        .pipe(gulp.dest(path.dest.js));
 });
+
+// Vendor scripts 
+gulp.task('scripts-vendor', function() {
+    return gulp.src(path.src.js_vendor+'*.js')
+        .pipe(plumber())
+        .pipe(order([
+            'modernizr.2.8.3.js',
+            'jquery-1.11.2.js',
+            '*.js'
+        ]))
+        .pipe(concat('vendor.js'))
+        .pipe(gulpif(!dev, uglify()))
+        .pipe(gulp.dest(path.dest.js));
+});
+
+// Vendor scripts 
+gulp.task('scripts-misc', function() {
+    return gulp.src(path.src.js_misc+'*.js')
+        .pipe(plumber())
+        .pipe(gulpif(!dev, uglify()))
+        .pipe(gulp.dest(path.dest.js));
+});
+
+
+// Styles
+gulp.task('sass', function() {
+    return gulp.src(path.src.scss+'main.scss')
+        .pipe(plumber({
+            errorHandler: onError
+        }))
+        .pipe(sass())
+        .pipe(prefix({
+            browsers: ['ie 8', 'ie 9', 'last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulpif(!dev, minify({keepSpecialComments: 1})))
+        .pipe(gulpif(wp, rename('style.css')))
+        .pipe(gulp.dest(path.dest.css))
+        .pipe(livereload());
+});
+
+// Images
+gulp.task('images', function() {
+    return gulp.src(path.src.img+'**/*.*')
+        .pipe(plumber())
+        .pipe(gulpif(!dev, imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        })))
+        .pipe(gulp.dest(path.dest.img));
+});
+
+// Fonts
+gulp.task('fonts', function() {
+    return gulp.src(path.src.fonts+'*')
+        .pipe(gulp.dest(path.dest.fonts));
+});
+
+// Watch
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(path.src.js+'**/*', ['scripts', 'hint']);
+    gulp.watch(path.src.js_vendor+'*', ['scripts-vendor']);
+    gulp.watch(path.src.js_misc+'*', ['scripts-misc']);
+    gulp.watch(path.src.scss+'**/*', ['sass']);
+    gulp.watch(path.src.img+'**/*', ['images']);
+    gulp.watch(path.src.fonts+'**/*', ['fonts']);
+});
+
+gulp.task('proxy', function () {
+    //SITEVISION-PROXY
+    require("./proxy.js");
+});
+
+// Default
+gulp.task('default', ['scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
