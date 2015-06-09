@@ -68,9 +68,30 @@ var server = http.createServer(function(req, res) {
 
 		if(req.url.indexOf("/webdav/files/") > -1) {
 
-            var filePath = req.url.replace("/webdav/files/", "./build/");
+            var filePaths = [
+                req.url.replace("/webdav/files/", "./build/"),
+                req.url.replace("/webdav/files/", "./lib/"),
+                req.url.replace("/webdav/files/", "./assets/")
+            ];
 
-			fs.readFile(filePath, 'binary', readFile(host, filePath));
+            filePaths.forEach(function (item, index) {
+
+                var found = false;
+
+                fs.readFile(item, function (err, file) {
+
+                    if (!err) {
+                        found = true;
+                        fs.readFile(item, 'binary', readFile(host, item));
+                    }
+
+                });
+
+                if (found == false && index == filePaths.length - 1) {
+                    readFile(host, filePaths[0])(true, null);
+                }
+
+            });
 
 		} else {
 
