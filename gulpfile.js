@@ -152,9 +152,5 @@ gulp.task('bower', function() {
     return bower('./bower_components').pipe(gulp.dest('lib/'));
 });
 
-gulp.task('cleanBower', function (cb) {
-    rimraf('./bower_components', cb);
-});
-
 // Default
-gulp.task('default', ['bower', 'cleanBower', 'scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
+gulp.task('default', ['bower', 'scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
