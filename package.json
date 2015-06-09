@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "bower": "^1.4.1",
     "browserify": "9.0.3",
     "colors": "^1.1.0",
     "gulp": "^3.8.11",
