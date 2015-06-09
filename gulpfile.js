@@ -19,6 +19,8 @@ var rename = require('gulp-rename');
 var prefix = require('gulp-autoprefixer');
 var imagemin = require('gulp-imagemin');
 var pngquant = require('imagemin-pngquant');
+var bower = require('gulp-bower');
+var rimraf = require('rimraf');
 var dev = !!(argv.dev);
 
 // Set build folder path
@@ -146,5 +148,13 @@ gulp.task('proxy', function () {
     require("./proxy.js");
 });
 
+gulp.task('bower', function() {
+    return bower('./bower_components').pipe(gulp.dest('lib/'));
+});
+
+gulp.task('cleanBower', function (cb) {
+    rimraf('./bower_components', cb);
+});
+
 // Default
-gulp.task('default', ['scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
+gulp.task('default', ['bower', 'cleanBower', 'scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
