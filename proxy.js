@@ -51,6 +51,8 @@ var server = http.createServer(function(req, res) {
 
 			} else {
 
+                req.protocol = req.connection.encrypted ? 'https' : 'http';
+
                 var fullUrl = req.protocol + '://' + req.headers['host'] + req.url;
 
                 loggingTool("Intercepted: " + fullUrl);
@@ -74,23 +76,20 @@ var server = http.createServer(function(req, res) {
                 req.url.replace("/webdav/files/", "./assets/")
             ];
 
+            var callback_count = 0;
+
             filePaths.forEach(function (item, index) {
-
-                var found = false;
-
                 fs.readFile(item, function (err, file) {
 
+                    callback_count = callback_count + 1;
+
                     if (!err) {
-                        found = true;
                         fs.readFile(item, 'binary', readFile(host, item));
+                    } else if (callback_count == filePaths.length) {
+                        readFile(host, filePaths[0])(true, null);
                     }
 
                 });
-
-                if (found == false && index == filePaths.length - 1) {
-                    readFile(host, filePaths[0])(true, null);
-                }
-
             });
 
 		} else {
