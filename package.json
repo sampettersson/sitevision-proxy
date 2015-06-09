@@ -1,6 +1,6 @@
 {
   "name": "sitevision-proxy",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A proxy for local sitevision assets.",
   "main": "gulpfile.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "imagemin-pngquant": "^4.0.0",
     "node-notifier": "^4.2.1",
     "node-sass": "^3.1.2",
+    "rimraf": "^2.4.0",
     "vinyl-transform": "^1.0.0",
     "yargs": "^3.5.4"
   }
