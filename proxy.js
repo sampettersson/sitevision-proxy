@@ -45,6 +45,10 @@ var server = http.createServer(function(req, res) {
 	var readFile = function (host, filePath) {
 		return function (err, file) {
 
+            if (req.written !== void 0) {
+                return;
+            }
+
 			if (err) {
 
 				doProxy(host);
@@ -58,6 +62,7 @@ var server = http.createServer(function(req, res) {
                 loggingTool("Intercepted: " + fullUrl);
                 loggingTool("Replaced with: " + filePath);
 
+                req.written = true;
 				res.write(file, 'binary');
 				res.end();
 
@@ -77,7 +82,6 @@ var server = http.createServer(function(req, res) {
             ];
 
             var callback_count = 0;
-            var found = false;
 
             filePaths.forEach(function (item, index) {
                 fs.readFile(item, function (err, file) {
@@ -85,9 +89,8 @@ var server = http.createServer(function(req, res) {
                     callback_count = callback_count + 1;
 
                     if (!err) {
-                        found = true
                         fs.readFile(item, 'binary', readFile(host, item));
-                    } else if (callback_count === filePaths.length && found === false) {
+                    } else if (callback_count === filePaths.length) {
                         readFile(host, filePaths[0])(true, null);
                     }
 
