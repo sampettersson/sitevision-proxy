@@ -77,6 +77,7 @@ var server = http.createServer(function(req, res) {
             ];
 
             var callback_count = 0;
+            var found = false;
 
             filePaths.forEach(function (item, index) {
                 fs.readFile(item, function (err, file) {
@@ -84,8 +85,9 @@ var server = http.createServer(function(req, res) {
                     callback_count = callback_count + 1;
 
                     if (!err) {
+                        found = true
                         fs.readFile(item, 'binary', readFile(host, item));
-                    } else if (callback_count == filePaths.length) {
+                    } else if (callback_count === filePaths.length && found === false) {
                         readFile(host, filePaths[0])(true, null);
                     }
 
