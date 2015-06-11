@@ -45,7 +45,7 @@ var server = http.createServer(function(req, res) {
 	var readFile = function (host, filePath) {
 		return function (err, file) {
 
-            if (req.written !== void 0) {
+            if (req.written === true) {
                 return;
             }
 
