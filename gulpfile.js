@@ -124,7 +124,7 @@ gulp.task('proxy', function () {
 });
 
 gulp.task('bower', function() {
-    return bower('./bower_components').pipe(gulp.dest('lib/'));
+    return bower('./build/bower_components').pipe(gulp.dest('./build/lib/'));
 });
 
 // Default
