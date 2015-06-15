@@ -31,7 +31,7 @@ var path = {
     src: {
         scss: 'assets/scss/',
         js: 'assets/js/',
-        js_misc: 'assets/js/misc/',
+        lib: 'lib/',
         img: 'assets/img/',
         fonts: 'assets/fonts/'
     },
@@ -72,15 +72,6 @@ gulp.task('scripts', function() {
         .pipe(gulpif(!dev, uglify()))
         .pipe(gulp.dest(path.dest.js));
 });
-
-// Vendor scripts 
-gulp.task('scripts-misc', function() {
-    return gulp.src(path.src.js_misc+'*.js')
-        .pipe(plumber())
-        .pipe(gulpif(!dev, uglify()))
-        .pipe(gulp.dest(path.dest.js));
-});
-
 
 // Styles
 gulp.task('sass', function() {
