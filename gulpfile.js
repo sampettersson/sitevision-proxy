@@ -128,4 +128,4 @@ gulp.task('bower', function() {
 });
 
 // Default
-gulp.task('default', ['bower', 'scripts', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
+gulp.task('default', ['bower', 'scripts', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
