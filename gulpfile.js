@@ -31,7 +31,6 @@ var path = {
     src: {
         scss: 'assets/scss/',
         js: 'assets/js/',
-        js_vendor: 'assets/js/vendors/',
         js_misc: 'assets/js/misc/',
         img: 'assets/img/',
         fonts: 'assets/fonts/'
@@ -70,20 +69,6 @@ gulp.task('scripts', function() {
             errorHandler: onError
         }))
         .pipe(browserified)
-        .pipe(gulpif(!dev, uglify()))
-        .pipe(gulp.dest(path.dest.js));
-});
-
-// Vendor scripts 
-gulp.task('scripts-vendor', function() {
-    return gulp.src(path.src.js_vendor+'*.js')
-        .pipe(plumber())
-        .pipe(order([
-            'modernizr.2.8.3.js',
-            'jquery-1.11.2.js',
-            '*.js'
-        ]))
-        .pipe(concat('vendor.js'))
         .pipe(gulpif(!dev, uglify()))
         .pipe(gulp.dest(path.dest.js));
 });
@@ -136,7 +121,6 @@ gulp.task('fonts', function() {
 gulp.task('watch', function() {
     livereload.listen();
     gulp.watch(path.src.js+'**/*', ['scripts', 'hint']);
-    gulp.watch(path.src.js_vendor+'*', ['scripts-vendor']);
     gulp.watch(path.src.js_misc+'*', ['scripts-misc']);
     gulp.watch(path.src.scss+'**/*', ['sass']);
     gulp.watch(path.src.img+'**/*', ['images']);
@@ -153,4 +137,4 @@ gulp.task('bower', function() {
 });
 
 // Default
-gulp.task('default', ['bower', 'scripts', 'scripts-vendor', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
+gulp.task('default', ['bower', 'scripts', 'scripts-misc', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
