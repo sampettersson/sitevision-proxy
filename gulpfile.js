@@ -79,7 +79,7 @@ gulp.task('sass', function() {
         .pipe(plumber({
             errorHandler: onError
         }))
-        .pipe(sass())
+        .pipe(sass({includePaths: ['./build/lib/']}))
         .pipe(prefix({
             browsers: ['ie 8', 'ie 9', 'last 2 versions'],
             cascade: false
