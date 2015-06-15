@@ -76,8 +76,8 @@ var server = http.createServer(function(req, res) {
 		if(req.url.indexOf("/webdav/files/resources/") > -1 || req.url.indexOf("/webdav/images/resources/") > -1) {
 
             var filePaths = [
-                req.url.replace("/webdav/files/resources/", "./build/"),
-                req.url.replace("/webdav/images/resources/", "./build/img/")
+                req.url.split("?")[0].replace("/webdav/files/resources/", "./build/"),
+                req.url.split("?")[0].replace("/webdav/images/resources/", "./build/img/")
             ];
 
             var callback_count = 0;
