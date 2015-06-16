@@ -129,7 +129,7 @@ gulp.task('bower', function() {
 });
 
 gulp.task('coffee', function() {
-    gulp.src('./**/*.coffee')
+    gulp.src('./build/lib/**/*.coffee')
         .pipe(coffee({bare: true}).on('error', gutil.log))
         .pipe(gulp.dest("./"))
 });
