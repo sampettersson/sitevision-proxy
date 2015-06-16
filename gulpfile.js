@@ -21,6 +21,7 @@ var imagemin = require('gulp-imagemin');
 var pngquant = require('imagemin-pngquant');
 var bower = require('gulp-bower');
 var coffee = require('gulp-coffee');
+var gutil = require('gulp-util');
 var dev = !!(argv.dev);
 
 // Set build folder path
