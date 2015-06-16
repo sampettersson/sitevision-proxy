@@ -20,7 +20,7 @@ var prefix = require('gulp-autoprefixer');
 var imagemin = require('gulp-imagemin');
 var pngquant = require('imagemin-pngquant');
 var bower = require('gulp-bower');
-var rimraf = require('rimraf');
+var coffee = require('gulp-coffee');
 var dev = !!(argv.dev);
 
 // Set build folder path
@@ -52,7 +52,7 @@ var onError = function (err) {
 
 // Jshint
 gulp.task('hint', function() {
-    return gulp.src([path.src.js+'components/*.js'])
+    return gulp.src([path.src.js+'*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
 });
@@ -125,6 +125,12 @@ gulp.task('proxy', function () {
 
 gulp.task('bower', function() {
     return bower('./build/bower_components').pipe(gulp.dest('./build/lib/'));
+});
+
+gulp.task('coffee', function() {
+    gulp.src('./**/*.coffee')
+        .pipe(coffee({bare: true}).on('error', gutil.log))
+        .pipe(gulp.dest("./"))
 });
 
 // Default
