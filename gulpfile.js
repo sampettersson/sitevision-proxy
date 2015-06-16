@@ -134,4 +134,4 @@ gulp.task('coffee', function() {
 });
 
 // Default
-gulp.task('default', ['bower', 'scripts', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
+gulp.task('default', ['bower', 'coffee', 'scripts', 'sass', 'images', 'fonts', 'hint', 'proxy', 'watch']);
