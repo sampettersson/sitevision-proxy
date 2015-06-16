@@ -1,6 +1,6 @@
 {
   "name": "sitevision-proxy",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "A proxy for local sitevision assets.",
   "main": "gulpfile.js",
   "scripts": {
